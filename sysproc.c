@@ -13,18 +13,36 @@ sys_fork(void)
   return fork();
 }
 
-int
+int 
 sys_exit(void)
 {
-  exit();
+	exit();
+	return 0; // not reached
+}
+
+
+int
+sys_exit2(int)
+{
+  int exit_status; 
+  argint(0,&exit_status);
+
+  exit2(exit_status);
   return 0;  // not reached
 }
+
 
 int
 sys_wait(void)
 {
   return wait();
 }
+
+int sys_wait2(int*)
+{
+	//incomplete
+}
+
 
 int
 sys_kill(void)
