@@ -15,10 +15,10 @@ int main (int argc, char *argv[]) {
     }
 
     if (child_pid) { // parent process
-        printf(1, "\tIn parent process, PID: %d\n", getpid());
-        printf(1, "\tWaiting foir child process to terminate\n");
+        printf(1, "In parent process, PID: %d\n", getpid());
+        printf(1, "Waiting for child process to terminate\n");
         if (waitpid(child_pid, &child_status, 0) > 0) {
-            printf(1, "\tChild prcess terminated with status %d\n", child_status);
+            printf(1, "Child process terminated with status %d\n", child_status);
         }
         else {
             printf(1, "error: exit1 failed . . . terminating and exiting\n");
@@ -27,7 +27,7 @@ int main (int argc, char *argv[]) {
         }
     }
     else { // child process
-        printf(1, "\t\tIn child process, PID: %d, status: %d\n", getpid(), child_status);
+        printf(1, "In child process, PID: %d, status: %d\n", getpid(), child_status);
         grandkid_pid = fork();
         if (grandkid_pid == -1) {
             printf(1, "error: fork2 failed . . . terminating and exiting\n");
@@ -36,9 +36,9 @@ int main (int argc, char *argv[]) {
         }
 
         if (grandkid_pid) { // child process
-            printf(1, "\t\tWaiting for grandchild process to terminate\n");
+            printf(1, "Waiting for grandchild process to terminate\n");
             if (waitpid(grandkid_pid, &grandkid_status, 0) > 0) {
-                 printf(1, "\t\tGrandchild process terminated with status %d\n", grandkid_status);
+                 printf(1, "Grandchild process terminated with status %d\n", grandkid_status);
             }
             else {
                 printf(1, "error: exit2 failed . . . terminating and exiting\n");
@@ -47,7 +47,7 @@ int main (int argc, char *argv[]) {
             }
         }
         else { // grandkid process
-            printf(1, "\t\t\tIn grandchild process, PID: %d, status: %d\n", getpid(), grandkid_status);
+            printf(1, "In grandchild process, PID: %d, status: %d\n", getpid(), grandkid_status);
         }
     }
     if (child_pid) {

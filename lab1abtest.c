@@ -1,6 +1,7 @@
 #include "types.h"
 #include "user.h"
 
+int exitWait(void);
 
 int main(int argc, char *argv[])
 {
