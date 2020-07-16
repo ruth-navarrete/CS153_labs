@@ -577,3 +577,67 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int
+waitpid(int pid, int *status, int options)
+{
+  // used link below for definitions of waitpid
+  // https://courses.cs.washington.edu/courses/cse451/16sp/os161-man/syscall/waitpid.html
+  // https://linux.die.net/man/2/waitpid
+  // similar to wait syscall
+  // must wait for a specific process (pid argument)
+  // return PID of terminated pid or -1 if does not exist/error
+  // can ignore options argument for lab 1 part c
+  struct proc *p;
+  int havekids = 0;
+  int new_pid = 0;
+  struct proc *curproc = myproc();
+
+  // wait for any child process, equivalent to wait()
+  if (pid == -1)
+    return wait();
+
+  // wait for any child process whose PID is equal to the absolute value of pid
+  if (pid < -1)
+    pid = -1 * pid;
+
+  // wait for any child process whose PID is equal to that of the calling process
+  if (pid == 0) // idk
+
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for exited children.
+    havekids = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if (p->pid == pid)
+        if(p->parent != curproc)
+          continue;
+        havekids = 1;
+        if(p->state == ZOMBIE){ 
+          // Found one.
+          if (p->status != 0) // status is not NULL
+              *status = p->status;
+          new_pid = p->pid;
+          kfree(p->kstack);
+          p->kstack = 0;
+          freevm(p->pgdir);
+          p->pid = 0;
+          p->parent = 0;
+          p->name[0] = 0;
+          p->killed = 0;
+          p->state = UNUSED;
+          release(&ptable.lock);
+          return new_pid;
+      }
+    }
+
+    // No point waiting if we don't have any children.
+    if(!havekids || curproc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
+    sleep(curproc, &ptable.lock);  //DOC: wait-sleep
+  }
+}
