@@ -592,9 +592,6 @@ waitpid(int pid, int *status, int options)
   int havekids, new_pid;
   struct proc *curproc = myproc();
 
-//  if (pid == curproc->pid)
-//    return -1;
-
   acquire(&ptable.lock);
   for(;;){
     // Scan through table looking for exited children.
