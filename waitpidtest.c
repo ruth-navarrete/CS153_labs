@@ -3,43 +3,56 @@
 #include "user.h"
 
 int main (int argc, char *argv[]) {
-    int waited_pid = 0;
-    int child_pid = fork();
-    int status;
-    int i = 0 ;
+    printf(1, "\nStart waitpid test\n");
+    int child_pid = 0, grandkid_pid = 0;
+    int child_status, grandkid_status;
 
+    child_pid = fork();
     if (child_pid == -1) {
-        printf(1, "fork failed. exiting\n");
+        printf(1, "error: fork1 failed . . . terminating and exiting\n");
         exit();
         return 0;
     }
 
-    if (child_pid) {  // parent process
-        printf(1, "Parent process, PID: %d", getpid());
-        
-        // loop to wait for child to terminate before parent
-        for (i = 0; i < 10; i++) {
-            waited_pid = waitpid(child_pid, &status, 0);
+    if (child_pid) { // parent process
+        printf(1, "\tIn parent process, PID: %d\n", getpid());
+        printf(1, "\tWaiting foir child process to terminate\n");
+        if (waitpid(child_pid, &child_status, 0) > 0) {
+            printf(1, "\tChild prcess terminated with status %d\n", child_status);
+        }
+        else {
+            printf(1, "error: exit1 failed . . . terminating and exiting\n");
+            exit();
+            return 0;
+        }
+    }
+    else { // child process
+        printf(1, "\t\tIn child process, PID: %d, status: %d\n", getpid(), child_status);
+        grandkid_pid = fork();
+        if (grandkid_pid == -1) {
+            printf(1, "error: fork2 failed . . . terminating and exiting\n");
+            exit();
+            return 0;
+        }
 
-            if (waited_pid == -1) {
-                printf(1, "waitpid error, exiting\n");
+        if (grandkid_pid) { // child process
+            printf(1, "\t\tWaiting for grandchild process to terminate\n");
+            if (waitpid(grandkid_pid, &grandkid_status, 0) > 0) {
+                 printf(1, "\t\tGrandchild process terminated with status %d\n", grandkid_status);
+            }
+            else {
+                printf(1, "error: exit2 failed . . . terminating and exiting\n");
                 exit();
                 return 0;
             }
-            else if (waited_pid == 0) {
-                printf(1, "In parent process, waiting for child process to ternminate\n");
-                sleep(1);
-            }
-            else {
-                //printf(1, "Child has ended with status %d", status);
-            }
+        }
+        else { // grandkid process
+            printf(1, "\t\t\tIn grandchild process, PID: %d, status: %d\n", getpid(), grandkid_status);
         }
     }
-    else {  // child process
-        printf(1, "Child process, PID: %d", getpid());
-        sleep(5); // let child terminate before parent
+    if (child_pid) {
+        printf(1, "End waitpid test\n");
     }
-
     exit();
     return 0;
 }

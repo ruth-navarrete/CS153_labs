@@ -16,8 +16,8 @@ sys_fork(void)
 int 
 sys_exit(void)
 {
-	exit();
-	return 0; // not reached
+  exit();
+  return 0; // not reached
 }
 
 
@@ -110,13 +110,13 @@ sys_uptime(void)
   return xticks;
 }
 
-int sys_waitpid(int pid, int *status, int options)
-//sys_waitpid(void)
+//int sys_waitpid(int pid, int *status, int options)
+int sys_waitpid(void)
 {
   // used below links for reference
   // https://www.cse.iitd.ernet.in/~sbansal/os/previous_years/2011/xv6_html/syscall_8c.html
-//  int pid, options;
-//  int *status;
+  int pid, options;
+  int *status;
 
   if(argint(0, &pid) < 0)
     return -1;
