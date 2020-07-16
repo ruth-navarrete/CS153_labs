@@ -23,7 +23,8 @@ sys_exit(void)
 
 int sys_exit2(int exit_status)
 {
-  argint(0,&exit_status);
+  if (argint(0,&exit_status) < 0)
+	return -1;
 
   exit2(exit_status);
   return 0;  // not reached
@@ -36,13 +37,14 @@ sys_wait(void)
   return wait();
 }
 
-/*int sys_wait2(void)
+int sys_wait2(void)
 {
-	int* seven;
+	int *status;
+	if (argptr(0, (char**) &status,sizeof(*status)) < 0)
+		return -1;
 
-	return wait2(seven);	//incomplete
+	return wait2(status);
 }
-*/
 
 int
 sys_kill(void)
