@@ -21,10 +21,8 @@ sys_exit(void)
 }
 
 
-int
-sys_exit2(int)
+int sys_exit2(int exit_status)
 {
-  int exit_status; 
   argint(0,&exit_status);
 
   exit2(exit_status);
@@ -38,11 +36,13 @@ sys_wait(void)
   return wait();
 }
 
-int sys_wait2(int*)
+/*int sys_wait2(void)
 {
-	//incomplete
-}
+	int* seven;
 
+	return wait2(seven);	//incomplete
+}
+*/
 
 int
 sys_kill(void)
