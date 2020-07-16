@@ -544,7 +544,8 @@ waitpid(int pid, int *status, int options)
   // return PID of terminated pid or -1 if does not exist/error
   // can ignore options argument for lab 1 part c
   struct proc *p;
-  int havekids, new_pid;
+  int havekids = 0;
+  int new_pid = 0;
   struct proc *curproc = myproc();
 
   // wait for any child process, equivalent to wait()
@@ -569,7 +570,7 @@ waitpid(int pid, int *status, int options)
         havekids = 1;
         if(p->state == ZOMBIE){ 
           // Found one.
-          if (status) // status is not NULL
+          if (p->status != 0) // status is not NULL
               *status = p->status;
           new_pid = p->pid;
           kfree(p->kstack);
