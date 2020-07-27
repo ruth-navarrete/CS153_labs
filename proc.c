@@ -88,6 +88,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 7; // set to middle of [0, 15]
 
   release(&ptable.lock);
 
@@ -199,6 +200,8 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+
+  np->priority = curproc->priority;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -415,8 +418,10 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+  int min = 15;
+
   for(;;){
+    min = 15; // reassign max to lowest with each iteration
     // Enable interrupts on this processor.
     sti();
 
@@ -425,20 +430,35 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+      if(p->priority < min)
+        min = p->priority;
+    }
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
+    // Normal process modified for aging
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+      else if(p->priority == min){
+        if(p->priority < 15)
+          p->priority = p->priority + 1;
+        // Switch to chosen process.  It is the process's job
+        // to release ptable.lock and then reacquire it
+        // before jumping back to us.
+        c->proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
 
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
+        // Process is done running for now.
+        // It should have changed its p->state before coming back.
+        c->proc = 0;
+      }
+      else if(p->priority > min){
+        if(p->priority > 0)
+          p->priority = p->priority - 1;
+      }
     }
     release(&ptable.lock);
 
@@ -672,4 +692,26 @@ waitpid(int pid, int *status, int options)
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
+}
+
+void
+updatePriority (int pid, int np) {
+  struct proc *p;
+  int op = myproc()->priority;
+
+  if (np < 0)
+    np = 0;
+  else if (np > 15)
+    np = 15;
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->pid == pid) {
+      p->priority = np;
+    }
+  }
+  release(&ptable.lock);
+
+  if (op > np) // it was suggested to me to do a check of all processes
+    yield();   // but decided to do this single one for now
 }

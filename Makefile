@@ -183,6 +183,7 @@ UPROGS=\
 	_zombie\
 	_waitpidtest\
 	_lab1abtest\
+	_agingtest\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
