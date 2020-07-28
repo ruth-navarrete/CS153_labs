@@ -111,8 +111,8 @@ sys_uptime(void)
 }
 
 //int sys_waitpid(int pid, int *status, int options)
-int sys_waitpid(void)
-{
+int
+sys_waitpid(void) {
   // used below links for reference
   // https://www.cse.iitd.ernet.in/~sbansal/os/previous_years/2011/xv6_html/syscall_8c.html
   int pid, options;
@@ -126,4 +126,17 @@ int sys_waitpid(void)
     return -1;
 
   return waitpid(pid, status, options);
+}
+
+int
+sys_updatePriority(void) {
+  int pid, np;
+
+  if (argint(0, &pid) < 0)
+    return -1;
+  if (argint(0, &np) < 0)
+    return -1;
+
+  updatePriority(pid, np);
+  return 0;
 }
