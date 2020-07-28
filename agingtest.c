@@ -3,7 +3,7 @@
 #include "user.h"
 
 int main (int argc, char *argv[]) {
-    int pid = 0;
+    int pid1 = 0, status1 = 0, pid2 = 0, status2 = 0;
 
     printf(1, "\nStart update priority test\n");
     printf(1, "PID: %d, initial priority: 7\n", getpid());
@@ -15,39 +15,58 @@ int main (int argc, char *argv[]) {
 //
     printf(1, "\nStart aging priority test\n");
     printf(1, "Parent PID: %d, initial priority: 0\n", getpid());
-    printf(1, "Current priority is 0. Will change priority to priority 7\nChildren inherit priority\n");
+    printf(1, "Change priority to priority 5\nChildren will inherit priority\n");
 
-    updatePriority(getpid(), 7);
+    updatePriority(getpid(), 5);
+ 
+    printf(1, "Same PID: %d, new priority: 5\n", getpid());
+    printf(1, "Forking 4 children\n");
 
-    printf(1, "Same PID: %d, new priority: 7\n", getpid());
-    printf(1, "Prep fork\n\tParent process will have priority 7\n\tChild process's priority will be changed to 2\n\tThis means the child process will be done prior to the parent\nForking\n");
+    pid1 = fork();
+    if (!pid1) {
+        pid2 = fork();
+    }
 
-    pid = fork();
-    if (pid == -1) {
+    if ((pid1 == -1) || (pid2 == -1)) {
         printf(1, "error: fork1 failed . . . terminating and exiting\n");
         exit();
     }
 
-    if (pid) { // parent process
-        printf(1, "Parent process, priority 7\n");
-
-        int i;
-        for (i = 0; i < 100; i++) {
-            printf(1, "%d ", i);
+    if (pid1) { // parent process
+        updatePriority(getpid(), 9);
+        printf(1, "Parent process, priority 9     ");
+        char k;
+        for (k = 'a'; k < 'z'; k++) {
+            printf(1, "%c ", k);
         }
+        printf(1, "\n");
     }
-    else { // child process
-        updatePriority(getpid(), 2);
-        printf(1, "Child process, priority 2\n");
+    else if (!pid1 && pid2) { // child
+        printf(1, "Child1 process, priority 5    ");
 
-        int j;
-        for (j = 0; j > -10; j--) {
-            printf(1, "%d ", j);
+        char i;
+        for (i = 'a'; i < 'z'; i++) {
+            printf(1, "%c ", i);
         }
+        printf(1, "\n");
+        waitpid(pid2, &status2, 0);
         exit();
         return 0;
     }
-    wait();
+    else { // grandchild
+        updatePriority(getpid(), 6);
+        printf(1, "Child2 process, priority 6    ");
+
+        char j;
+        for (j = 'a'; j < 'z'; j++) {
+            printf(1, "%c ", j);
+        }
+        printf(1, "\n");
+        exit();
+        return 0;
+    }
+
+    waitpid(pid1, &status1, 0);
     printf(1, "\n");
     exit();
     return 0;
