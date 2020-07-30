@@ -51,7 +51,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   int status;                  // exit status of terminated process
   int priority;                // priority level, range [0, 15]
-  int age;                     // age of a process, how long process has run
+  int btime;                   // burst time, how long process has run
   int stime;		       // starting time
   int etime;		       // ending time
 };
@@ -61,3 +61,7 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+void updateTime();
+int turnaroundTime();
+int waitingTime();
