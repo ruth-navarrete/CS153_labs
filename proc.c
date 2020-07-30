@@ -743,7 +743,7 @@ turnaroundTime(int pid) {
 	int y = p->etime;
 	int result;
 	
-	result = y - x;
+	result = x - y;
 	return result;
 	
 }
@@ -752,11 +752,11 @@ int
 waitingTime(int pid) {
 	struct proc *p = myproc();
 	int x = p->stime;
-	int y = p->btime;
-	int z = p->etime;
+	int y = p->etime;
+	int z = p->btime;
 	int result;
-	result = z - x;
-	result-=y;
+	result = x - y;
+	result-=z;
 
 	return result;
 	
