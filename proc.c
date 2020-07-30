@@ -253,7 +253,7 @@ exit(void)
     }
   }
   end_t = clock();
-  curproc->etime = ((double)(end_t));
+  curproc->etime = ((int)(end_t));
 
   begin_op();
   iput(curproc->cwd);
@@ -356,7 +356,7 @@ wait(void)
         p->state = UNUSED;
         release(&ptable.lock);
 	end_t = clock();
-	p->etime = ((double)(end_t));
+	p->etime = ((int)(end_t));
         return pid;
       }
     }
@@ -730,7 +730,7 @@ updatePriority (int pid, int np) {
 }
 
 void
-updateTime() {
+updateTime(void) {
 	struct proc *p;
 	acquire(&ptable.lock);
 
@@ -744,7 +744,7 @@ updateTime() {
 }
 
 int
-turnaroundTime() {
+turnaroundTime(int pid) {
 	struct proc *p = myproc();
 	int x = p->ctime;
 	int y = p->etime;
@@ -756,7 +756,7 @@ turnaroundTime() {
 }
 
 int 
-waitingTime() {
+waitingTime(int pid) {
 	struct proc *p = myproc();
 	int x = p->ctime;
 	int y = p->btime;

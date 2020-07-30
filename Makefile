@@ -184,6 +184,7 @@ UPROGS=\
 	_waitpidtest\
 	_lab1abtest\
 	_agingtest\
+	_timeTest\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

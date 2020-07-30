@@ -24,3 +24,6 @@
 #define SYS_exit2   23
 #define SYS_wait2   24
 #define SYS_updatePriority 25
+#define SYS_turnaroundTime 26
+#define SYS_waitingTime	27
+#define SYS_updateTime 28

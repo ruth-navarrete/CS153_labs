@@ -63,5 +63,5 @@ struct proc {
 //   expandable heap
 
 void updateTime();
-int turnaroundTime();
-int waitingTime();
+int turnaroundTime(int);
+int waitingTime(int);

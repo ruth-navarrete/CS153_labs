@@ -141,3 +141,22 @@ sys_updatePriority(void) {
   return 0;
 }
 
+int 
+sys_updateTime(void)
+{
+	updateTime();
+	return 0;
+}
+
+int 
+sys_turnaroundTime(void)
+{
+	return turnaroundTime();
+}
+
+int
+sys_waitingTime(void)
+{
+	return waitingTime();
+	
+}
