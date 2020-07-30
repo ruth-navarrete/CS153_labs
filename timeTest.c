@@ -17,19 +17,23 @@ int main (int argc, char* argv[]) {
 	//have children to do printing or anything (adding nop instructions)
 	//print out the pid to know which child is running and show the waiting/turn time 
 
-	if(pid1 != 0)
-	{
-		pid2 = fork();
-	}
-	
 
 
 	if (pid1) {
 		time1 = turnaroundTime(getpid());
-		printf(1,"\nParent process: turnaround time is %d \n", time1);
+		printf(1,"\nParent process: pid is %d, turnaround time is %d \n", getpid(),time1);
 		
 		time2 = waitingTime(getpid());
 		printf(1,"\nthe waiting time for the process was %d \n", time2);
+	}
+	else 
+	{
+		time1 = turnaroundTime(getpid());
+		printf(1,"\nChild process: pid is %d, turnaround time is %d \n", getpid(),time1);
+		
+		time2 = waitingTime(getpid());
+		printf(1,"\nthe waiting time for this process is %d \n", time2);
+		
 	}
 
 
