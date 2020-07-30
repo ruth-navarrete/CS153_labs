@@ -52,6 +52,8 @@ struct proc {
   int status;                  // exit status of terminated process
   int priority;                // priority level, range [0, 15]
   int age;                     // age of a process, how long process has run
+  int stime;		       // starting time
+  int etime;		       // ending time
 };
 
 // Process memory is laid out contiguously, low addresses first:

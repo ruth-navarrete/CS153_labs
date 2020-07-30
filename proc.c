@@ -6,6 +6,8 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include <time.h>
+#include <stdio.h>
 
 struct {
   struct spinlock lock;
@@ -184,6 +186,7 @@ fork(void)
   int i, pid;
   struct proc *np;
   struct proc *curproc = myproc();
+  clock_t start_t = clock();  
 
   // Allocate process.
   if((np = allocproc()) == 0){
@@ -202,6 +205,7 @@ fork(void)
   *np->tf = *curproc->tf;
 
   np->priority = curproc->priority;
+  np->stime = ((int)(start_t))/CLOCK_PER_SEC;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -233,6 +237,7 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
+  clock_t end_t;
 
   if(curproc == initproc)
     panic("init exiting");
@@ -244,6 +249,8 @@ exit(void)
       curproc->ofile[fd] = 0;
     }
   }
+  end_t = clock();
+  curproc->etime = ((int)(end_t))/CLOCK_PER_SEC;
 
   begin_op();
   iput(curproc->cwd);
@@ -715,3 +722,5 @@ updatePriority (int pid, int np) {
   if (op > np) // it was suggested to me to do a check of all processes
     yield();   // but decided to do this single one for now
 }
+
+

@@ -33,4 +33,3 @@ SYSCALL(sleep)
 SYSCALL(uptime)
 SYSCALL(waitpid)
 SYSCALL(updatePriority)
-
