@@ -109,7 +109,7 @@ extern int sys_waitpid(void);
 extern int sys_wait2(void);
 extern int sys_exit2(void);
 extern int sys_updatePriority(void);
-extern int sys_waitingTme(void);
+extern int sys_waitingTime(void);
 extern int sys_updateTime(void);
 extern int sys_turnaroundTime(void);
 

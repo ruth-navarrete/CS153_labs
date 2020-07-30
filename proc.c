@@ -125,7 +125,6 @@ userinit(void)
 {
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
-  clock_t start_t;
   p = allocproc();
   
   initproc = p;
@@ -133,8 +132,7 @@ userinit(void)
     panic("userinit: out of memory?");
   inituvm(p->pgdir, _binary_initcode_start, (int)_binary_initcode_size);
   p->sz = PGSIZE;
-  start_t = clock();
-  p->ctime = start_t;
+  p->stime = ticks;
   p->btime = 0;
   memset(p->tf, 0, sizeof(*p->tf));
   p->tf->cs = (SEG_UCODE << 3) | DPL_USER;
@@ -189,7 +187,6 @@ fork(void)
   int i, pid;
   struct proc *np;
   struct proc *curproc = myproc();
-  clock_t start_t; 
 
   // Allocate process.
   if((np = allocproc()) == 0){
@@ -208,8 +205,7 @@ fork(void)
   *np->tf = *curproc->tf;
 
   np->priority = curproc->priority;
-  start_t = clock();
-  np->stime = ((double)(start_t));
+
 
   // Clear %eax so that fork returns 0 in the child.
 
@@ -240,7 +236,6 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
-  clock_t end_t;
 
   if(curproc == initproc)
     panic("init exiting");
@@ -252,8 +247,7 @@ exit(void)
       curproc->ofile[fd] = 0;
     }
   }
-  end_t = clock();
-  curproc->etime = ((int)(end_t));
+  curproc->etime = ticks;
 
   begin_op();
   iput(curproc->cwd);
@@ -333,7 +327,6 @@ wait(void)
   struct proc *p;
   int havekids, pid;
   struct proc *curproc = myproc();
-  clock_t end_t;  
 
   acquire(&ptable.lock);
   for(;;){
@@ -355,8 +348,7 @@ wait(void)
         p->killed = 0;
         p->state = UNUSED;
         release(&ptable.lock);
-	end_t = clock();
-	p->etime = ((int)(end_t));
+	p->etime = ticks;
         return pid;
       }
     }
@@ -734,7 +726,7 @@ updateTime(void) {
 	struct proc *p;
 	acquire(&ptable.lock);
 
-	for (p = ptable.proc; p < &ptable,proc[NPROC]; p++)
+	for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
 	{
 		if (p->state == RUNNING)
 			p->btime++;
@@ -746,7 +738,7 @@ updateTime(void) {
 int
 turnaroundTime(int pid) {
 	struct proc *p = myproc();
-	int x = p->ctime;
+	int x = p->stime;
 	int y = p->etime;
 	int result;
 	
@@ -758,10 +750,10 @@ turnaroundTime(int pid) {
 int 
 waitingTime(int pid) {
 	struct proc *p = myproc();
-	int x = p->ctime;
+	int x = p->stime;
 	int y = p->btime;
 	int z = p->etime;
-
+	int result;
 	result = z - x;
 	result-=y;
 

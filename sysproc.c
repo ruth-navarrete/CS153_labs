@@ -151,12 +151,19 @@ sys_updateTime(void)
 int 
 sys_turnaroundTime(void)
 {
-	return turnaroundTime();
+	int pid;
+	if (argint(0,&pid) < 0)
+		return -1;
+
+	return turnaroundTime(pid);
 }
 
 int
 sys_waitingTime(void)
 {
-	return waitingTime();
+	int pid;
+	if (argint(0,&pid) < 0)
+		return -1;
+	return waitingTime(pid);
 	
 }
