@@ -185,6 +185,8 @@ UPROGS=\
 	_lab1abtest\
 	_agingtest\
 	_timeTest\
+	_lab1\
+	_lab2\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
