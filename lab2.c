@@ -24,7 +24,7 @@ int PScheduler(void){
     printf(1, "\n  Step 2: Assuming that the priorities range between range between 0 to 31\n");
     printf(1, "\n  Step 3: 0 is the highest priority. All processes have a default priority of 10\n");
     printf(1, "\n  Step 4: The parent processes will switch to priority 0\n");
-    updatePriority(0,0);
+    updatePriority(getpid(),0);
     for (i = 0; i <  3; i++) {
 	pid = fork();
 	if (pid > 0 ) {
