@@ -90,7 +90,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = 7; // set to middle of [0, 15]
+  p->priority = 15; // set to middle of [0, 31]
 
   release(&ptable.lock);
 
@@ -424,10 +424,10 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  int min = 15;
+  int min = 31;
 
   for(;;){
-    min = 15; // reassign max to lowest with each iteration
+    min = 31; // reassign max to lowest with each iteration
     // Enable interrupts on this processor.
     sti();
 
@@ -445,7 +445,7 @@ scheduler(void)
       if(p->state != RUNNABLE)
         continue;
       else if(p->priority == min){
-        if(p->priority < 15)
+        if(p->priority < 31)
           p->priority = p->priority + 1;
         // Switch to chosen process.  It is the process's job
         // to release ptable.lock and then reacquire it
@@ -707,8 +707,8 @@ updatePriority (int pid, int np) {
 
   if (np < 0)
     np = 0;
-  else if (np > 15)
-    np = 15;
+  else if (np > 31)
+    np = 31;
 
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {

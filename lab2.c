@@ -1,6 +1,5 @@
 #include "types.h"
 #include "user.h"
-
 int main(int argc, char *argv[])
 {
 	
@@ -25,7 +24,7 @@ int PScheduler(void){
     printf(1, "\n  Step 2: Assuming that the priorities range between range between 0 to 31\n");
     printf(1, "\n  Step 2: 0 is the highest priority. All processes have a default priority of 10\n");
     printf(1, "\n  Step 2: The parent processes will switch to priority 0\n");
-    updatePriority(pid,0);
+    updatePriority(0,0);
     for (i = 0; i <  3; i++) {
 	pid = fork();
 	if (pid > 0 ) {
@@ -47,7 +46,7 @@ int PScheduler(void){
 
 	if(pid > 0) {
 		for (i = 0; i <  3; i++) {
-			wait(0);
+			wait();
 
 		}
                      printf(1,"\n if processes with highest priority finished first then its correct \n");
